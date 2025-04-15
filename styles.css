@@ -33,7 +33,7 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     position: relative;
-    min-height: 600px;
+    height: 90vh;
     display: flex;
     flex-direction: column;
 }
@@ -42,9 +42,16 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
     padding: 20px;
     transition: opacity 0.3s ease;
+    position: relative;
+    height: 100%;
+}
+
+#chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .hidden {
@@ -70,6 +77,14 @@ h1 {
     background-color: white;
     border-top: 1px solid var(--primary-light);
     align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 0 0 10px 10px;
 }
 
 .file-upload-label {
@@ -120,6 +135,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-bottom: 60px;
 }
 
 .message {
@@ -228,7 +244,11 @@ button:hover {
     .container {
         margin: 0;
         border-radius: 0;
-        min-height: 100vh;
+        height: 100vh;
+    }
+    
+    .input-area {
+        border-radius: 0;
     }
     
     .input-group, .input-area {
@@ -246,30 +266,6 @@ button:hover {
     .message {
         max-width: 90%;
     }
-}
-
-.debug-section {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 300px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 10px;
-    font-size: 12px;
-    max-height: 200px;
-    overflow-y: auto;
-    border-radius: 5px;
-    margin: 20px;
-}
-
-.debug-section h3 {
-    margin-bottom: 10px;
-    color: var(--primary-light);
-}
-
-#debug-info {
-    font-family: monospace;
 }
 
 /* Scrollbar styling */
