@@ -167,4 +167,35 @@ button:hover {
     .message {
         max-width: 90%;
     }
+}
+
+.debug-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 12px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.debug-section h3 {
+    margin: 0 0 5px 0;
+    color: #4CAF50;
+}
+
+#debug-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+#debug-info div {
+    padding: 2px 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 } 
