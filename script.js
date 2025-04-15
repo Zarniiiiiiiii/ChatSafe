@@ -27,40 +27,22 @@ async function testConnection() {
             .select('*')
             .limit(1);
 
-        if (error) {
-            debugLog('Connection test failed', error);
-            throw error;
-        }
-
-        debugLog('Connection test successful', data);
+        if (error) throw error;
         return true;
     } catch (error) {
-        debugLog('Connection test error', error);
         return false;
     }
 }
 
 // Initialize the application
 async function initializeApp() {
-    debugLog('Initializing application...');
-    
-    // Test connection first
     const connected = await testConnection();
-    if (!connected) {
-        alert('Failed to connect to chat server. Please try again later.');
-        return;
-    }
+    if (!connected) return;
 
     // Set up real-time test channel
     const channel = supabaseClient.channel('test')
-        .on('broadcast', { event: 'test' }, (payload) => {
-            debugLog('Test broadcast received', payload);
-        })
-        .subscribe((status) => {
-            debugLog('Test channel subscription status', status);
-        });
-
-    debugLog('Application initialized successfully');
+        .on('broadcast', { event: 'test' }, () => {})
+        .subscribe();
 }
 
 // Call initialization
@@ -68,16 +50,11 @@ initializeApp();
 
 async function joinChat() {
     const username = document.getElementById('username').value.trim();
-    if (!username) {
-        alert('Please enter your name');
-        return;
-    }
+    if (!username) return;
 
     currentUser = username;
     document.getElementById('login').classList.add('hidden');
     document.getElementById('chat').classList.remove('hidden');
-
-    debugLog('User joined chat', { username: currentUser });
 
     try {
         // Load previous messages
@@ -86,12 +63,7 @@ async function joinChat() {
             .select('*')
             .order('created_at', { ascending: true });
 
-        if (error) {
-            debugLog('Error loading messages', error);
-            throw error;
-        }
-
-        debugLog('Loaded messages', { count: messages.length });
+        if (error) throw error;
         messages.forEach(displayMessage);
 
         // Set up real-time subscription
@@ -102,62 +74,94 @@ async function joinChat() {
                 schema: 'public',
                 table: 'messages'
             }, (payload) => {
-                debugLog('New message received', payload);
                 displayMessage(payload.new);
             })
-            .subscribe((status) => {
-                debugLog('Message channel subscription status', status);
-            });
+            .subscribe();
 
     } catch (error) {
-        debugLog('Error in joinChat', error);
-        alert('Failed to join chat. Please try again.');
         return;
     }
 
     document.getElementById('message').focus();
 }
 
-async function sendMessage() {
-    const messageInput = document.getElementById('message');
-    const text = messageInput.value.trim();
-
-    if (!text) {
-        alert('Please enter a message');
-        return;
+// Add event listener for file input
+document.getElementById('file-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('preview-image');
+            const previewContainer = document.getElementById('image-preview');
+            preview.src = e.target.result;
+            previewContainer.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
     }
+});
 
+function clearImage() {
+    document.getElementById('file-upload').value = '';
+    document.getElementById('preview-image').src = '';
+    document.getElementById('image-preview').classList.add('hidden');
+}
+
+async function sendMessage() {
+    const text = document.getElementById('message').value.trim();
+    const file = document.getElementById('file-upload').files[0];
+    
+    if (!text && !file) return;
+    
     try {
-        const { error } = await supabaseClient
-            .from('messages')
-            .insert([{
-                username: currentUser,
-                message: text
-            }]);
-
-        if (error) {
-            debugLog('Error sending message', error);
-            throw error;
+        let imageUrl = null;
+        if (file) {
+            // Show loading state
+            const previewContainer = document.getElementById('image-preview');
+            previewContainer.classList.add('uploading');
+            
+            const fileName = `chat_images/${Date.now()}_${file.name}`;
+            const { data, error } = await supabaseClient.storage
+                .from('chat_images')
+                .upload(fileName, file);
+            
+            if (error) throw error;
+            
+            imageUrl = supabaseClient.storage
+                .from('chat_images')
+                .getPublicUrl(data.path).data.publicUrl;
         }
 
-        debugLog('Message sent successfully', { text });
-        messageInput.value = '';
-        messageInput.focus();
+        await supabaseClient
+            .from('messages')
+            .insert({ 
+                username: currentUser,
+                message: text,
+                image_url: imageUrl 
+            });
+        
+        // Clear inputs
+        document.getElementById('message').value = '';
+        clearImage();
+        
     } catch (error) {
-        debugLog('Error in sendMessage', error);
-        alert('Failed to send message. Please try again.');
+        console.error('Error sending message:', error);
+        return;
     }
 }
 
 function displayMessage(msg) {
     const messagesContainer = document.getElementById('messages-container');
     const isCurrentUser = msg.username === currentUser;
+    const time = new Date(msg.created_at).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
     
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isCurrentUser ? 'own' : 'other'}`;
     
-    const headerDiv = document.createElement('div');
-    headerDiv.className = 'message-header';
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'meta';
     
     const usernameSpan = document.createElement('span');
     usernameSpan.className = 'username';
@@ -165,16 +169,27 @@ function displayMessage(msg) {
     
     const timeSpan = document.createElement('span');
     timeSpan.className = 'time';
-    timeSpan.textContent = new Date(msg.created_at).toLocaleTimeString();
+    timeSpan.textContent = time;
     
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'message-content';
-    contentDiv.textContent = msg.message;
+    metaDiv.appendChild(usernameSpan);
+    metaDiv.appendChild(timeSpan);
+    messageDiv.appendChild(metaDiv);
     
-    headerDiv.appendChild(usernameSpan);
-    headerDiv.appendChild(timeSpan);
-    messageDiv.appendChild(headerDiv);
-    messageDiv.appendChild(contentDiv);
+    if (msg.message) {
+        const textDiv = document.createElement('div');
+        textDiv.className = 'text';
+        textDiv.textContent = msg.message;
+        messageDiv.appendChild(textDiv);
+    }
+    
+    if (msg.image_url) {
+        const img = document.createElement('img');
+        img.src = msg.image_url;
+        img.className = 'chat-image';
+        img.loading = 'lazy';
+        img.alt = 'User upload';
+        messageDiv.appendChild(img);
+    }
     
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time Chat</title>
+    <title>ChatSafe ❤️ Ami</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://unpkg.com/@supabase/ui@latest/dist/style.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,7 +12,7 @@
     <div class="container">
         <!-- Login Section -->
         <div id="login" class="section">
-            <h1>Welcome to Chat</h1>
+            <h1>Welcome to ChatSafe</h1>
             <div class="input-group">
                 <input type="text" id="username" placeholder="Enter your name" maxlength="20">
                 <button onclick="joinChat()">Join Chat</button>
@@ -25,6 +25,14 @@
                 <!-- Messages will be added here dynamically -->
             </div>
             <div class="input-area">
+                <label for="file-upload" id="file-upload-label" class="file-upload-label" title="Upload Image">
+                    📎
+                </label>
+                <input type="file" id="file-upload" hidden accept="image/*">
+                <div id="image-preview" class="image-preview hidden">
+                    <img id="preview-image" src="" alt="Preview">
+                    <button onclick="clearImage()" class="clear-image">×</button>
+                </div>
                 <input type="text" id="message" placeholder="Type your message...">
                 <button onclick="sendMessage()">Send</button>
             </div>
