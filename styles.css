@@ -1,12 +1,23 @@
+:root {
+    --primary-color: #ff69b4;
+    --primary-light: #ffb6c1;
+    --primary-dark: #db7093;
+    --text-color: #333;
+    --background-color: #fff;
+    --message-bg: #f8f8f8;
+    --own-message-bg: #ffebf2;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 body {
-    background-color: #f0f2f5;
+    background-color: var(--background-color);
+    color: var(--text-color);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -23,9 +34,15 @@ body {
     overflow: hidden;
     position: relative;
     min-height: 600px;
+    display: flex;
+    flex-direction: column;
 }
 
 .section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     padding: 20px;
     transition: opacity 0.3s ease;
 }
@@ -36,75 +53,68 @@ body {
 
 h1 {
     text-align: center;
-    color: #1a73e8;
+    color: var(--primary-color);
     margin-bottom: 20px;
 }
 
 .input-group {
     display: flex;
     gap: 10px;
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .input-area {
     display: flex;
     gap: 10px;
-    padding: 20px;
+    padding: 10px;
     background-color: white;
-    position: sticky;
-    bottom: 0;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--primary-light);
+    align-items: center;
 }
 
 .file-upload-label {
-    background: #f0f2f5;
-    padding: 8px 12px;
-    border-radius: 8px;
     cursor: pointer;
-    margin-right: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 20px;
-    transition: background-color 0.2s ease;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
 }
 
 .file-upload-label:hover {
-    background-color: #e4e6e9;
+    background-color: var(--primary-light);
 }
 
-input {
+input[type="text"] {
     flex: 1;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    padding: 10px;
+    border: 2px solid var(--primary-light);
+    border-radius: 20px;
     font-size: 16px;
     outline: none;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s;
 }
 
-input:focus {
-    border-color: #1a73e8;
+input[type="text"]:focus {
+    border-color: var(--primary-color);
 }
 
 button {
-    padding: 12px 24px;
-    background-color: #1a73e8;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 20px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #1557b0;
+    background-color: var(--primary-dark);
 }
 
 #messages-container {
-    height: calc(100vh - 200px);
-    max-height: 500px;
+    flex: 1;
     overflow-y: auto;
     padding: 20px;
     display: flex;
@@ -113,37 +123,39 @@ button:hover {
 }
 
 .message {
-    padding: 12px;
-    border-radius: 8px;
-    max-width: 80%;
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 15px;
     word-wrap: break-word;
-    animation: fadeIn 0.3s ease;
 }
 
 .message.own {
-    background-color: #1a73e8;
-    color: white;
     align-self: flex-end;
+    background-color: var(--own-message-bg);
+    border-bottom-right-radius: 0;
 }
 
 .message.other {
-    background-color: #f1f0f0;
     align-self: flex-start;
+    background-color: var(--message-bg);
+    border-bottom-left-radius: 0;
 }
 
 .meta {
     display: flex;
     justify-content: space-between;
     margin-bottom: 5px;
-    font-size: 0.9em;
+    font-size: 12px;
+    color: #666;
 }
 
 .username {
     font-weight: bold;
+    color: var(--primary-color);
 }
 
 .time {
-    opacity: 0.8;
+    color: #999;
 }
 
 .text {
@@ -162,15 +174,54 @@ button:hover {
     transform: scale(1.03);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.image-preview {
+    position: relative;
+    max-width: 200px;
+    margin: 10px 0;
+}
+
+.preview-image {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+.clear-image {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+}
+
+.send-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: white;
+    transition: transform 0.2s;
+}
+
+.send-button:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+.send-button i {
+    font-size: 18px;
 }
 
 @media (max-width: 600px) {
@@ -200,66 +251,42 @@ button:hover {
 .debug-section {
     position: fixed;
     bottom: 0;
-    left: 0;
     right: 0;
+    width: 300px;
     background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
+    color: white;
     padding: 10px;
-    font-family: monospace;
     font-size: 12px;
-    max-height: 150px;
+    max-height: 200px;
     overflow-y: auto;
-    z-index: 1000;
+    border-radius: 5px;
+    margin: 20px;
 }
 
 .debug-section h3 {
-    margin: 0 0 5px 0;
-    color: #4CAF50;
+    margin-bottom: 10px;
+    color: var(--primary-light);
 }
 
 #debug-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    font-family: monospace;
 }
 
-#debug-info div {
-    padding: 2px 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-.image-preview {
-    position: relative;
-    max-width: 100px;
-    margin-right: 10px;
+::-webkit-scrollbar-track {
+    background: var(--primary-light);
+    border-radius: 4px;
 }
 
-.image-preview img {
-    max-width: 100%;
-    max-height: 100px;
-    border-radius: 8px;
-    object-fit: cover;
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
 }
 
-.clear-image {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 16px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
-.clear-image:hover {
-    background: #cc0000;
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
 } 
